@@ -1,7 +1,8 @@
 // test/multiSigWallet.test.js
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-
+const mainNet_priceFeed = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
+const testNet_priceFeed = "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e";
 describe("MultiSigWallet", function () {
   let MultiSigWallet;
   let multiSigWallet;
@@ -22,7 +23,8 @@ describe("MultiSigWallet", function () {
 
       "Test MultiSigWallet",
       "100000000000000000000",
-      receiver.address
+      receiver.address,
+      testNet_priceFeed
     );
 
     await multiSigWallet.deployed();

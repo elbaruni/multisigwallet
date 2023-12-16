@@ -11,8 +11,7 @@ contract MultiSigWallet {
     uint256 public usdValue;
     address public receiverWallet;
 
-    AggregatorV3Interface public constant ETH_USD_FEED =
-        AggregatorV3Interface(0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e);
+    AggregatorV3Interface public ethUSD_PriceFeed;
     enum ProposalStatus {
         Pending,
         Accepted,
@@ -60,15 +59,24 @@ contract MultiSigWallet {
         address[] memory initialDirectors,
         string memory _name,
         uint256 _usdValue,
-        address _receiverWallet
+        address _receiverWallet,
+        address _priceFeed
     ) {
         require(initialDirectors.length == 2, "Two directors required");
-
+        require(
+            initialDirectors[0] != initialDirectors[1],
+            "different wallets required"
+        );
+        require(initialDirectors[0] != address(0), "zero address not allowed");
+        require(initialDirectors[1] != address(0), "zero address not allowed");
+        require(_receiverWallet != address(0), "zero address not allowed");
+        require(_priceFeed != address(0), "zero address not allowed");
         director1 = initialDirectors[0];
         director2 = initialDirectors[1];
         name = _name;
         usdValue = _usdValue;
         receiverWallet = _receiverWallet;
+        ethUSD_PriceFeed = AggregatorV3Interface(_priceFeed);
     }
 
     function makeProposal(
@@ -151,7 +159,7 @@ contract MultiSigWallet {
     }
 
     function getPrice() public view returns (uint256) {
-        (, int256 price, , , ) = ETH_USD_FEED.latestRoundData();
+        (, int256 price, , , ) = ethUSD_PriceFeed.latestRoundData();
 
         return (uint256(price) * 10 ** 10);
     }
